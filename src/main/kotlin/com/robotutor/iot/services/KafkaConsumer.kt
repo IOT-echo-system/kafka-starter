@@ -1,5 +1,6 @@
 package com.robotutor.iot.services
 
+import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.models.Message
 import com.robotutor.loggingstarter.serializer.DefaultSerializer
 import org.springframework.stereotype.Service
@@ -12,11 +13,11 @@ class KafkaConsumer(
 ) {
 
     fun <T : Message> consume(
-        topics: List<String>,
+        topics: List<KafkaTopicName>,
         messageType: Class<T>,
-        onMessage: (key: String, value: T) -> T,
+        onMessage: (key: String, value: T) -> Unit,
     ): Disposable {
-        val kafkaReceiver = kafkaReceiverFactory(topics)
+        val kafkaReceiver = kafkaReceiverFactory(topics.map { it.toString() })
 
         return kafkaReceiver.receive()
             .map {

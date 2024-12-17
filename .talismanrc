@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: src/main/kotlin/com/robotutor/iot/services/KafkaPublisher.kt
   checksum: fb514b87486ceb1397580f777bfccf1d7738139820ca486c5a061134a673e4b8
 - filename: src/main/kotlin/com/robotutor/iot/services/KafkaConsumer.kt
-  checksum: ed4c43c667bbc7b8bd294aa132b2a0e9ba5a576b313e6919d99cf09929caaeb0
+  checksum: 3848cdb02f66439467184b8187a4f200a546f45620389b976bb7c5a0af4178cb
 - filename: src/main/resources/application.yml
   checksum: a3b4ee701f9cdbeb00f35752a75815b40c7148a7ed2ed425ed06cdfca00c9c28
 - filename: build.gradle.kts
