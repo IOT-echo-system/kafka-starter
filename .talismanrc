@@ -7,4 +7,6 @@ fileignoreconfig:
   checksum: a3b4ee701f9cdbeb00f35752a75815b40c7148a7ed2ed425ed06cdfca00c9c28
 - filename: build.gradle.kts
   checksum: de7fc16e7d1a2861ca6fa2be008e247a66f355b486afd62ff08cbc2e8c216005
+- filename: src/main/kotlin/com/robotutor/iot/config/KafkaConfig.kt
+  checksum: 9ca917b8ca85a4968ab74d02dd061814095fe7248c32370bb1ab958c0858831e
 version: ""
