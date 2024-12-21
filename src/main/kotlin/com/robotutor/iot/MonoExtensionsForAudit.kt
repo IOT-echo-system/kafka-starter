@@ -4,7 +4,7 @@ import com.robotutor.iot.models.AuditMessage
 import com.robotutor.iot.models.AuditStatus
 import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.services.KafkaPublisher
-import com.robotutor.iot.utils.models.UserAuthenticationData
+import com.robotutor.iot.utils.models.UserData
 import reactor.core.publisher.Mono
 import reactor.util.context.ContextView
 import java.time.LocalDateTime
@@ -61,8 +61,8 @@ private fun getDeviceId(contextView: ContextView): String? {
 
 private fun getUserId(contextView: ContextView): String {
     try {
-        val userAuthenticationData = contextView.get(UserAuthenticationData::class.java)
-        return userAuthenticationData.userId
+        val userData = contextView.get(UserData::class.java)
+        return userData.userId
     } catch (ex: Exception) {
         return "missing-user-id"
     }
