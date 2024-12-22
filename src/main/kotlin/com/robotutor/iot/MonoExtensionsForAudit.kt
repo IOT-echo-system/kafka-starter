@@ -12,7 +12,7 @@ import java.time.ZoneId
 
 fun <T> Mono<T>.auditOnError(
     event: String,
-    metadata: Map<String, Any> = emptyMap(),
+    metadata: Map<String, Any?> = emptyMap(),
     userId: String? = null,
     deviceId: String? = null,
 ): Mono<T> {
@@ -35,7 +35,7 @@ fun <T> Mono<T>.auditOnError(
 
 fun <T> Mono<T>.auditOnSuccess(
     event: String,
-    metadata: Map<String, Any> = emptyMap(),
+    metadata: Map<String, Any?> = emptyMap(),
     userId: String? = null,
     deviceId: String? = null,
 ): Mono<T> {

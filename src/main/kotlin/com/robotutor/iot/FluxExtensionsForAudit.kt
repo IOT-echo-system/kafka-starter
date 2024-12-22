@@ -35,7 +35,7 @@ fun <T> Flux<T>.auditOnError(
 
 fun <T> Flux<T>.auditOnSuccess(
     event: String,
-    metadata: Map<String, Any> = emptyMap(),
+    metadata: Map<String, Any?> = emptyMap(),
     userId: String? = null,
     deviceId: String? = null,
 ): Flux<T> {

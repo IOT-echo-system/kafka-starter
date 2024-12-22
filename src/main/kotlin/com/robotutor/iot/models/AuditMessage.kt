@@ -6,7 +6,7 @@ import java.time.ZoneId
 data class AuditMessage(
     val status: AuditStatus,
     val userId: String,
-    val metadata: Map<String, Any>,
+    val metadata: Map<String, Any?>,
     val event: String,
     val accountId: String? = null,
     val deviceId: String? = null,
