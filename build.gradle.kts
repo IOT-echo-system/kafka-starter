@@ -67,7 +67,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.projectreactor.kafka:reactor-kafka")
-    implementation("org.springframework.kafka:spring-kafka-reactive")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.robotutor:robotutor-tech-utils:1.0.25")
     implementation("com.robotutor:logging-starter:1.0.1")
