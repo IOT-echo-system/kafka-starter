@@ -2,5 +2,6 @@ package com.robotutor.iot.models
 
 enum class KafkaTopicName {
     AUDIT,
-    COMMUNICATION
+    COMMUNICATION,
+    ADD_WIDGET
 }

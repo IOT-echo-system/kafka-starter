@@ -1,12 +1,16 @@
 package com.robotutor.iot.config
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import reactor.kafka.receiver.KafkaReceiver
+import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import reactor.kafka.receiver.ReceiverOptions
+import reactor.kafka.sender.SenderOptions
 
 @Configuration
 class KafkaConfig {
@@ -30,10 +34,21 @@ class KafkaConfig {
     }
 
     @Bean
-    fun kafkaReceiverFactory(): (List<String>) -> KafkaReceiver<String, String> {
+    fun kafkaReceiverFactory(): (List<String>) -> ReactiveKafkaConsumerTemplate<String, String> {
         return { topics ->
             val receiverOptions = receiverOptions(topics)
-            KafkaReceiver.create(receiverOptions)
+            ReactiveKafkaConsumerTemplate(receiverOptions)
         }
+    }
+
+    @Bean
+    fun reactiveKafkaProducerTemplate(): ReactiveKafkaProducerTemplate<String, String> {
+        val config = mapOf(
+            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java
+        )
+        val senderOptions = SenderOptions.create<String, String>(config)
+        return ReactiveKafkaProducerTemplate(senderOptions)
     }
 }

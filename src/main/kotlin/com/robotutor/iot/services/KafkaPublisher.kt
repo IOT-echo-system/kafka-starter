@@ -2,24 +2,34 @@ package com.robotutor.iot.services
 
 import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.models.Message
-import com.robotutor.loggingstarter.LogDetails
-import com.robotutor.loggingstarter.Logger
+import com.robotutor.loggingstarter.logOnError
+import com.robotutor.loggingstarter.logOnSuccess
 import com.robotutor.loggingstarter.serializer.DefaultSerializer
-import org.springframework.kafka.core.KafkaTemplate
+import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.common.header.internals.RecordHeader
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 class KafkaPublisher(
-    private val kafkaTemplate: KafkaTemplate<String, String>,
+    private val reactiveKafkaProducerTemplate: ReactiveKafkaProducerTemplate<String, String>,
 ) {
-    val logger = Logger(this::class.java)
-    fun publish(topicName: KafkaTopicName, key: String? = null, message: Message) {
+    fun publish(topicName: KafkaTopicName, key: String? = null, message: Message): Mono<Message> {
         val messageAsString = DefaultSerializer.serialize(message)
-        if (key != null) {
-            kafkaTemplate.send(topicName.toString(), key, messageAsString)
-        } else {
-            kafkaTemplate.send(topicName.toString(), messageAsString)
+        return Mono.deferContextual { ctx ->
+            val headers = ctx.stream()
+                .map { (k, v) ->
+                    RecordHeader(k.toString(), v.toString().toByteArray())
+                }
+                .toList()
+            val producerRecord = ProducerRecord(topicName.toString(), null, key, messageAsString, headers)
+            reactiveKafkaProducerTemplate.send(producerRecord)
+                .map {
+                    message
+                }
         }
-        logger.info(LogDetails(message = "Successfully published topic $topicName"))
+            .logOnSuccess("Successfully published to $topicName")
+            .logOnError("", "Failed to publish to $topicName")
     }
 }
