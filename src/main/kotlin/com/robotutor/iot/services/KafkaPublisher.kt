@@ -2,6 +2,7 @@ package com.robotutor.iot.services
 
 import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.models.Message
+import com.robotutor.loggingstarter.Logger
 import com.robotutor.loggingstarter.logOnError
 import com.robotutor.loggingstarter.logOnSuccess
 import com.robotutor.loggingstarter.serializer.DefaultSerializer
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono
 class KafkaPublisher(
     private val reactiveKafkaProducerTemplate: ReactiveKafkaProducerTemplate<String, String>,
 ) {
+    val logger = Logger(this::class.java)
     fun publish(topicName: KafkaTopicName, key: String? = null, message: Message): Mono<Message> {
         val messageAsString = DefaultSerializer.serialize(message)
         return Mono.deferContextual { ctx ->
@@ -29,7 +31,7 @@ class KafkaPublisher(
                     message
                 }
         }
-            .logOnSuccess("Successfully published to $topicName")
-            .logOnError("", "Failed to publish to $topicName")
+            .logOnSuccess(logger, "Successfully published kafka topic to $topicName")
+            .logOnError(logger, "", "Failed to publish kafka topic to $topicName")
     }
 }

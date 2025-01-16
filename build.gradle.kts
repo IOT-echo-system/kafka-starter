@@ -19,7 +19,7 @@ publishing {
             from(components["java"])
             groupId = "com.robotutor"
             artifactId = "kafka-starter"
-            version = "1.0.9"
+            version = "1.0.10"
 
             pom {
                 name.set("Kafka Starter")
@@ -68,9 +68,9 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.projectreactor.kafka:reactor-kafka")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.robotutor:robotutor-tech-utils:1.0.25")
-    implementation("com.robotutor:logging-starter:1.0.4")
-    implementation("com.robotutor:web-client-starter:1.0.4")
+    implementation("com.robotutor:robotutor-tech-utils:1.0.37")
+    implementation("com.robotutor:logging-starter:1.0.5")
+    implementation("com.robotutor:web-client-starter:1.0.6")
 }
 
 kotlin {
