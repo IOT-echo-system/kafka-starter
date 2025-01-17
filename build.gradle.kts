@@ -19,7 +19,7 @@ publishing {
             from(components["java"])
             groupId = "com.robotutor"
             artifactId = "kafka-starter"
-            version = "1.0.15"
+            version = "1.0.16"
 
             pom {
                 name.set("Kafka Starter")

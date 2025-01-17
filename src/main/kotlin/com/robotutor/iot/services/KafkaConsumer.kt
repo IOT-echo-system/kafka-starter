@@ -3,13 +3,18 @@ package com.robotutor.iot.services
 import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.models.Message
 import com.robotutor.iot.utils.createMono
+import com.robotutor.iot.utils.models.PremisesData
+import com.robotutor.iot.utils.models.UserData
 import com.robotutor.loggingstarter.Logger
 import com.robotutor.loggingstarter.logOnError
 import com.robotutor.loggingstarter.logOnSuccess
 import com.robotutor.loggingstarter.serializer.DefaultSerializer
+import org.apache.kafka.common.header.Headers
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Flux
+import reactor.util.context.Context
 import java.nio.charset.StandardCharsets
 
 @Service
@@ -25,19 +30,31 @@ class KafkaConsumer(
                 val message = DefaultSerializer.deserialize(receiverRecord.value(), messageType)
                 val topic = DefaultSerializer.deserialize(receiverRecord.topic(), KafkaTopicName::class.java)
                 createMono(KafkaTopicMessage(topic, message))
-                    .contextWrite { ctx ->
-                        val headers = receiverRecord.headers()
-                            .associate { it.key() to String(it.value(), StandardCharsets.UTF_8) }
-                        headers.entries.fold(ctx) { acc, (key, value) ->
-                            acc.put(key, value)
-                        }
-                    }
-                    .doFinally {
-                        receiverRecord.receiverOffset().acknowledge()
-                    }
+                    .contextWrite { ctx -> writeContext(receiverRecord.headers(), ctx) }
+                    .doFinally { receiverRecord.receiverOffset().acknowledge() }
                     .logOnSuccess(logger, "Successfully consumed kafka topic to $topic")
                     .logOnError(logger, "", "Failed to consume kafka topic to $topic")
             }
+    }
+
+    private fun writeContext(
+        receiverHeaders: Headers,
+        ctx: Context
+    ): Context {
+        val headers = receiverHeaders.associate { it.key() to String(it.value(), StandardCharsets.UTF_8) }
+        val context = ctx
+            .put(UserData::class.java, DefaultSerializer.deserialize(headers["userData"]!!, UserData::class.java))
+            .put(
+                ServerWebExchange::class.java,
+                DefaultSerializer.deserialize(headers["exchange"]!!, ServerWebExchange::class.java)
+            )
+        if (headers["premisesData"] != null) {
+            return context.put(
+                PremisesData::class.java,
+                DefaultSerializer.deserialize(headers["premisesData"]!!, PremisesData::class.java)
+            )
+        }
+        return context
     }
 }
 
