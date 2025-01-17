@@ -28,6 +28,7 @@ class KafkaConsumer(
                     .contextWrite { ctx ->
                         val headers = receiverRecord.headers()
                             .associate { it.key() to String(it.value(), StandardCharsets.UTF_8) }
+                        println("consumed headers: $headers")
                         headers.entries.fold(ctx) { acc, (key, value) ->
                             acc.put(key, value)
                         }

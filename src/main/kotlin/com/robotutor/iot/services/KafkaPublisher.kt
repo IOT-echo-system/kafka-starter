@@ -22,14 +22,12 @@ class KafkaPublisher(
         return Mono.deferContextual { ctx ->
             val headers = ctx.stream()
                 .map { (k, v) ->
+                    println("Topic published with header $k: $v")
                     RecordHeader(k.toString(), v.toString().toByteArray())
                 }
                 .toList()
             val producerRecord = ProducerRecord(topicName.toString(), null, key, messageAsString, headers)
-            reactiveKafkaProducerTemplate.send(producerRecord)
-                .map {
-                    message
-                }
+            reactiveKafkaProducerTemplate.send(producerRecord).map { message }
         }
             .logOnSuccess(logger, "Successfully published kafka topic to $topicName")
             .logOnError(logger, "", "Failed to publish kafka topic to $topicName")
