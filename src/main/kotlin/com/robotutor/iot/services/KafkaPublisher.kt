@@ -22,8 +22,7 @@ class KafkaPublisher(
         return Mono.deferContextual { ctx ->
             val headers = ctx.stream()
                 .map { (k, v) ->
-                    println("Topic published with header $k: $v")
-                    RecordHeader(k.toString(), v.toString().toByteArray())
+                    RecordHeader(k.toString(), DefaultSerializer.serialize(v).toByteArray())
                 }
                 .toList()
             val producerRecord = ProducerRecord(topicName.toString(), null, key, messageAsString, headers)
