@@ -23,7 +23,7 @@ class KafkaConsumer(
         return kafkaReceiver.receive()
             .flatMap { receiverRecord ->
                 val message = DefaultSerializer.deserialize(receiverRecord.value(), messageType)
-                val topic = DefaultSerializer.deserialize(receiverRecord.key(), KafkaTopicName::class.java)
+                val topic = DefaultSerializer.deserialize(receiverRecord.topic(), KafkaTopicName::class.java)
                 createMono(KafkaTopicMessage(topic, message))
                     .contextWrite { ctx ->
                         val headers = receiverRecord.headers()
