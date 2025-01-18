@@ -6,6 +6,7 @@ import com.robotutor.iot.models.KafkaTopicName
 import com.robotutor.iot.services.KafkaPublisher
 import com.robotutor.iot.utils.createMono
 import com.robotutor.iot.utils.models.UserData
+import com.robotutor.loggingstarter.models.ServerWebExchangeDTO
 import reactor.core.publisher.Mono
 import reactor.util.context.ContextView
 import java.time.LocalDateTime
@@ -15,11 +16,11 @@ fun <T : Any> Mono<T>.auditOnError(
     event: String,
     metadata: Map<String, Any?> = emptyMap(),
     userId: String? = null,
-    deviceId: String? = null,
+    premisesId: String? = null,
 ): Mono<T> {
     return onErrorResume { error ->
         Mono.deferContextual { ctx ->
-            auditOnError<T>(ctx, userId, metadata, event, deviceId, error)
+            auditOnError<T>(ctx, userId, metadata, event, premisesId, error)
         }
     }
 }
@@ -28,17 +29,22 @@ fun <T : Any> Mono<T>.auditOnSuccess(
     event: String,
     metadata: Map<String, Any?> = emptyMap(),
     userId: String? = null,
-    deviceId: String? = null,
+    premisesId: String? = null,
 ): Mono<T> {
     return flatMap { result ->
         Mono.deferContextual { ctx ->
-            auditOnSuccess(ctx, userId, metadata, event, deviceId, result)
+            auditOnSuccess(ctx, userId, metadata, event, premisesId, result)
         }
     }
 }
 
-fun getDeviceId(contextView: ContextView): String? {
-    return contextView.getOrDefault("deviceId", "missing-device-id")
+fun getPremisesId(contextView: ContextView): String {
+    try {
+        val exchangeDTO = contextView.get(ServerWebExchangeDTO::class.java)
+        return exchangeDTO.requestDetails.headers["x-premises-id"]?.first() ?: "missing-premises-id"
+    } catch (ex: Exception) {
+        return "missing-premises-id"
+    }
 }
 
 fun getUserId(contextView: ContextView): String {
@@ -55,7 +61,7 @@ fun <T : Any> auditOnError(
     userId: String?,
     metadata: Map<String, Any?>,
     event: String,
-    deviceId: String?,
+    premisesId: String?,
     error: Throwable
 ): Mono<T> {
     val kafkaPublisher = ctx.getOrEmpty<KafkaPublisher>(KafkaPublisher::class.java)
@@ -65,7 +71,7 @@ fun <T : Any> auditOnError(
             userId = userId ?: getUserId(ctx),
             metadata = metadata,
             event = event,
-            deviceId = deviceId ?: getDeviceId(ctx),
+            premisesId = premisesId ?: getPremisesId(ctx),
             timestamp = LocalDateTime.now(ZoneId.of("UTC"))
         )
         kafkaPublisher.get().publish(KafkaTopicName.AUDIT, "audit", auditMessage)
@@ -80,7 +86,7 @@ fun <T : Any> auditOnSuccess(
     userId: String?,
     metadata: Map<String, Any?>,
     event: String,
-    deviceId: String?,
+    premisesId: String?,
     result: T
 ): Mono<T> {
     val kafkaPublisher = ctx.getOrEmpty<KafkaPublisher>(KafkaPublisher::class.java)
@@ -90,7 +96,7 @@ fun <T : Any> auditOnSuccess(
             userId = userId ?: getUserId(ctx),
             metadata = metadata,
             event = event,
-            deviceId = deviceId ?: getDeviceId(ctx),
+            premisesId = premisesId ?: getPremisesId(ctx),
             timestamp = LocalDateTime.now(ZoneId.of("UTC"))
         )
         kafkaPublisher.get().publish(KafkaTopicName.AUDIT, "audit", auditMessage)

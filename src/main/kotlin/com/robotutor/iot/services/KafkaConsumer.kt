@@ -8,11 +8,11 @@ import com.robotutor.iot.utils.models.UserData
 import com.robotutor.loggingstarter.Logger
 import com.robotutor.loggingstarter.logOnError
 import com.robotutor.loggingstarter.logOnSuccess
+import com.robotutor.loggingstarter.models.ServerWebExchangeDTO
 import com.robotutor.loggingstarter.serializer.DefaultSerializer
 import org.apache.kafka.common.header.Headers
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Flux
 import reactor.util.context.Context
 import java.nio.charset.StandardCharsets
@@ -45,8 +45,8 @@ class KafkaConsumer(
         val context = ctx
             .put(UserData::class.java, DefaultSerializer.deserialize(headers["userData"]!!, UserData::class.java))
             .put(
-                ServerWebExchange::class.java,
-                DefaultSerializer.deserialize(headers["exchange"]!!, ServerWebExchange::class.java)
+                ServerWebExchangeDTO::class.java,
+                DefaultSerializer.deserialize(headers["exchange"]!!, ServerWebExchangeDTO::class.java)
             )
         if (headers["premisesData"] != null) {
             return context.put(

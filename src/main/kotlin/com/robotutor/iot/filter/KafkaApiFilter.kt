@@ -10,8 +10,9 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 @Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 class KafkaApiFilter(private val kafkaPublisher: KafkaPublisher) : WebFilter {
-    @Order(Ordered.LOWEST_PRECEDENCE)
+
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         return chain.filter(exchange)
             .contextWrite {

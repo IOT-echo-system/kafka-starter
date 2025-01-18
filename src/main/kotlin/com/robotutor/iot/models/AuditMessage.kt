@@ -9,7 +9,7 @@ data class AuditMessage(
     val metadata: Map<String, Any?>,
     val event: String,
     val accountId: String? = null,
-    val deviceId: String? = null,
+    val premisesId: String? = null,
     val timestamp: LocalDateTime = LocalDateTime.now(ZoneId.of("UTC"))
 ) : Message()
 
