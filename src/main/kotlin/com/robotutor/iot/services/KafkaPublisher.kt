@@ -27,7 +27,6 @@ class KafkaPublisher(
             val headers = createHeadersRecord(ctx)
             val producerRecord = ProducerRecord(topicName.toString(), key, messageAsString)
             headers.forEach { producerRecord.headers().add(it) }
-            println("----------------------$producerRecord----------------")
             reactiveKafkaProducerTemplate.send(producerRecord).map { message }
         }
             .logOnSuccess(logger, "Successfully published kafka topic to $topicName")
