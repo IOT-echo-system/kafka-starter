@@ -5,8 +5,8 @@ fileignoreconfig:
   checksum: de7fc16e7d1a2861ca6fa2be008e247a66f355b486afd62ff08cbc2e8c216005
 - filename: src/main/kotlin/com/robotutor/iot/config/KafkaConfig.kt
   checksum: f014a183c059cc5354fe09d3b8c6a871b4cf70b142036ac021288b434a989171
-- filename: src/main/kotlin/com/robotutor/iot/services/KafkaPublisher.kt
-  checksum: c540f25b0f6eb50d1a39ff2646dd0ceaf27763706d1de7beef7ab798afac3487
 - filename: src/main/kotlin/com/robotutor/iot/services/KafkaConsumer.kt
-  checksum: 8ad6c1f0994358360cb83657eef533512edcea5d8e1672badf121bc940589ed7
+  checksum: 7f5ec76148a7dfbc02cb9baac1f96e76a289dd4fccd5b7efc260215faa02337f
+- filename: src/main/kotlin/com/robotutor/iot/services/KafkaPublisher.kt
+  checksum: 733665f1d9abf078d680f201bbf1ffe20de7b608e2e8c6d19287231630ce471f
 version: ""
